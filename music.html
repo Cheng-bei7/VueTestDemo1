@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+
+    <!-- 
+        1.歌曲搜索
+            按下回车(v-on.enter) 查询数据 渲染数据
+            服务器返回的数据比较复杂时,获取的时候需要注意层级结构
+            通过审查元素,快速定位到所需元素
+        2.歌曲播放
+            点击播放 歌曲地址获取 歌曲地址设置
+            歌曲id依赖歌曲搜索的结果,对于不用的数据也需要关注
+        3.歌曲封面
+            点击播放 歌曲封面获取 歌曲封面设置
+            在vue中通过v-bind操纵属性
+            本地无法获取的数据,基本都会有对应的接口
+        4.歌曲评论
+            点击播放 歌曲评论获取 歌曲评论渲染
+            在vue中通过v-for生成列表
+        5.播放动画
+            监听音乐播放(v-on play) 监听音乐暂停(v-on pause) 操纵类名
+            audio标签的play事件会在音频播放的时候触发
+            audio标签的pause事件会在音频暂停的时候触发
+            通过对象的方式设置类名,类名生效与否取决于后面值的真假
+        6.mv播放
+            mv图标显示(v-if) mv地址获取(接口 mvid) 遮罩层 mv地址设置
+            
+     -->
+     <div class="wrap">
+        <!-- 播放器主体区域 -->
+        <div class="play_wrap" id="player">
+          <div class="search_bar">
+            <img src="images/player_title.png" alt="" />
+            <!-- 搜索歌曲 -->
+            <input type="text" autocomplete="off" v-model="query" @keyup.enter="searchMusic" />
+          </div>
+          <div class="center_con">
+            <!-- 搜索歌曲列表 -->
+            <div class='song_wrapper'>
+              <ul class="song_list">
+                <li v-for="item in musicList">
+                  <a href="javascript:;" @click="playMusic(item.id)"></a> 
+                  <b>{{item.name}}</b> 
+                  <span v-if="item.mvid!=0" @click="playMv(item.mvid)"><i></i></span>
+                </li>
+              </ul>
+              <img src="images/line.png" class="switch_btn" alt="">
+            </div>
+            <!-- 歌曲信息容器 -->
+            <div class="player_con" :class="{playing:isPlaying}">
+            <img src="images/player_bar.png" class="play_bar" />
+              <!-- 黑胶碟片 -->
+              <img src="images/disc.png" class="disc autoRotate" />
+              <img :src="musicPic" class="cover autoRotate" />
+            </div>
+            <!-- 评论容器 -->
+            <div class="comment_wrapper">
+              <h5 class='title'>热门留言</h5>
+              <div class='comment_list'>
+                <dl v-for="item in content">
+                  <dt><img alt="" :src="item.user.avatarUrl"></dt>
+                  <dd class="name">{{item.user.nickname}}</dd>
+                  <dd class="detail">{{item.content}}</dd>
+                </dl>
+              </div>
+              <img src="images/line.png" class="right_line">
+            </div>
+          </div>
+          <div class="audio_con">
+            <audio @play="play" @pause="pause" :src="musicUrl" ref='audio'  controls autoplay loop class="myaudio"></audio>
+          </div>
+          <div class="video_con" v-show="isShow" style="display: none;">
+            <video :src="mvUrl" controls="controls"></video>
+            <div class="mask" @click="hidden"></div>
+          </div>
+        </div>
+      </div>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+      <script src="./js/main.js"></script>
+</body>
+</html>
